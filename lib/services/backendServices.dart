@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../model/Task.dart';
 
 class BackendService {
-  static const String baseUrl = 'http://10.0.2.2:3000';
+  static const String baseUrl = 'https://server-9d8j.onrender.com';
 
   static Future<List<Task>> getTasks() async {
     final response = await http.get(Uri.parse('$baseUrl/tasks'));

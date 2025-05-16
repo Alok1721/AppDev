@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'bloc/task_bloc.dart';
+import 'core/theme.dart';
 import 'repositories/task_repository.dart';
 import 'routes/routes.dart';
 
@@ -17,9 +18,7 @@ class MyApp extends StatelessWidget {
       create: (context) => TaskBloc(TaskRepository()),
       child: MaterialApp(
         title: 'Task Manager',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
+        theme: AppTheme.darkTheme,
         initialRoute: AppRoutes.splash,
         onGenerateRoute: AppRoutes.generateRoute,
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/task_bloc.dart';
 import '../bloc/task_state.dart';
+import '../widgets/bottom_navigation.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -39,20 +40,23 @@ class DashboardScreen extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Hi Ghulam',
-                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                          Text(
+                            'Hi Alkraj',
+                            style: Theme.of(context).textTheme.displayMedium,
                           ),
                           Text(
                             '$pendingCount tasks pending',
-                            style: const TextStyle(fontSize: 16, color: Colors.white70),
+                            style: Theme.of(context).textTheme.bodyLarge,
                           ),
                         ],
                       ),
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 20,
-                        backgroundColor: Colors.white,
-                        child: Icon(Icons.person, color: Colors.grey),
+                        backgroundColor: Theme.of(context).colorScheme.surface,
+                        child: Icon(
+                          Icons.person,
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        ),
                       ),
                     ],
                   ),
@@ -61,7 +65,7 @@ class DashboardScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Theme.of(context).cardTheme.color,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(
@@ -69,32 +73,44 @@ class DashboardScreen extends StatelessWidget {
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
+                            children: [
                               Text(
                                 'Mobile App Design',
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                                style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 18),
                               ),
                               Text(
                                 'Me and Anita',
-                                style: TextStyle(fontSize: 14, color: Colors.white70),
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ],
                           ),
                         ),
-                        const Stack(
+                        Stack(
                           children: [
-                            CircleAvatar(radius: 16, backgroundColor: Colors.grey),
-                            Positioned(left: 20, child: CircleAvatar(radius: 16, backgroundColor: Colors.grey)),
+                            CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                            ),
+                            Positioned(
+                              left: 20,
+                              child: CircleAvatar(
+                                radius: 16,
+                                backgroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(width: 16),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Text('Now', style: TextStyle(color: Colors.white)),
+                          child: Text(
+                            'Now',
+                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                          ),
                         ),
                       ],
                     ),
@@ -104,12 +120,12 @@ class DashboardScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'MONTHLY REVIEW',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.arrow_forward, color: Colors.cyan),
+                        icon: Icon(Icons.arrow_forward, color: Theme.of(context).colorScheme.primary),
                         onPressed: () {
                           Navigator.pushNamed(context, '/task_list');
                         },
@@ -136,18 +152,19 @@ class DashboardScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.grey[900],
-        selectedItemColor: Colors.cyan,
-        unselectedItemColor: Colors.white70,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.description), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: ''),
-        ],
+      bottomNavigationBar: BottomNavigation(
+        currentIndex: 0, // Dashboard is the first tab
+        onTap: (index) {
+          if (index == 0) {
+          } else if (index == 1) {
+            Navigator.pushNamed(context, '/files');
+          } else if (index == 2) {
+            Navigator.pushNamed(context, '/profile');
+          } else if (index == 3) {
+            Navigator.pushNamed(context, '/notifications');
+          }
+        },
       ),
-      backgroundColor: Colors.grey[900],
     );
   }
 
@@ -155,7 +172,7 @@ class DashboardScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -163,12 +180,12 @@ class DashboardScreen extends StatelessWidget {
         children: [
           Text(
             '$count',
-            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+            style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 32),
           ),
           const SizedBox(height: 8),
           Text(
             title,
-            style: TextStyle(fontSize: 16, color: color),
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: color),
           ),
         ],
       ),

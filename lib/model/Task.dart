@@ -1,35 +1,43 @@
 class Task {
   final int id;
   final String title;
-  final String description;
+  final String? description;
   final bool status;
   final DateTime createdAt;
   final int priority;
+  final DateTime targetDateTime;
 
   Task({
     required this.id,
     required this.title,
-    required this.description,
+    this.description,
     required this.status,
     required this.createdAt,
     required this.priority,
+    required this.targetDateTime,
   });
 
-  factory Task.fromJson(Map<String, dynamic> json) => Task(
-    id: json['id'],
-    title: json['title'],
-    description: json['description'],
-    status: json['status'],
-    createdAt: DateTime.parse(json['created_at']),
-    priority: json['priority'],
-  );
+  factory Task.fromJson(Map<String, dynamic> json) {
+    return Task(
+      id: json['id'] as int,
+      title: json['title'] as String,
+      description: json['description'] as String?,
+      status: json['status'] as bool,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      priority: json['priority'] as int,
+      targetDateTime: DateTime.parse(json['target_date_time'] as String),
+    );
+  }
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'title': title,
-    'description': description,
-    'status': status,
-    'created_at': createdAt.toIso8601String(),
-    'priority': priority,
-  };
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'status': status,
+      'created_at': createdAt.toIso8601String(),
+      'priority': priority,
+      'target_date_time': targetDateTime.toIso8601String(),
+    };
+  }
 }

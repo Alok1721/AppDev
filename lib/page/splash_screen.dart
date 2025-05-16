@@ -15,16 +15,17 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Trigger the LoadTasks event to fetch data during the splash screen
     BlocProvider.of<TaskBloc>(context).add(LoadTasks());
-    // Navigate to TaskListScreen after 3 seconds
     Timer(const Duration(seconds: 3), () {
-      navigateToTaskListScreen();
+      navigateToDashboardScreen();
     });
   }
 
   void navigateToTaskListScreen() {
     Navigator.pushReplacementNamed(context, '/task_list');
+  }
+  void navigateToDashboardScreen() {
+    Navigator.pushReplacementNamed(context, '/dashboard');
   }
 
   @override
