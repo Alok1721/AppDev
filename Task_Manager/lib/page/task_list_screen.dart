@@ -13,14 +13,16 @@ class TaskListScreen extends StatefulWidget {
 }
 
 class _TaskListScreenState extends State<TaskListScreen> {
-  DateTime _currentMonth = DateTime(2025, 5); // Start with May 2025
-  DateTime _selectedDate = DateTime(2025, 5, 16); // Start with today (May 16, 2025)
+  DateTime _currentMonth = DateTime(2025, 5);
+  DateTime _selectedDate = DateTime(2025, 5, 16);
   List<DateTime> _datesInMonth = [];
 
   @override
   void initState() {
     super.initState();
     _updateDatesInMonth();
+    print('TaskListScreen: Loading tasks'); // Debug
+    context.read<TaskBloc>().add(LoadTasks());
   }
 
   void _updateDatesInMonth() {
@@ -40,11 +42,11 @@ class _TaskListScreenState extends State<TaskListScreen> {
   }
 
   void _nextMonth() {
-    setState(() {
+    setState() {
       _currentMonth = DateTime(_currentMonth.year, _currentMonth.month + 1);
       _selectedDate = DateTime(_currentMonth.year, _currentMonth.month, 1);
       _updateDatesInMonth();
-    });
+    };
   }
 
   void _selectDate(DateTime date) {
@@ -62,7 +64,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header with Month Navigation
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -96,7 +97,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              // Date Selector with Task Indicators
               SizedBox(
                 height: 60,
                 child: BlocBuilder<TaskBloc, TaskState>(
@@ -105,9 +105,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     if (state is TaskLoaded) {
                       for (var task in state.tasks) {
                         final taskDate = DateTime(
-                          task.createdAt.year,
-                          task.createdAt.month,
-                          task.createdAt.day,
+                          task.targetDateTime.year,
+                          task.targetDateTime.month,
+                          task.targetDateTime.day,
                         );
                         taskCounts[taskDate] = (taskCounts[taskDate] ?? 0) + 1;
                       }
@@ -132,7 +132,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              // Task List with Grouping
               Expanded(
                 child: BlocBuilder<TaskBloc, TaskState>(
                   builder: (context, state) {
@@ -142,15 +141,17 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       if (state.tasks.isEmpty) {
                         return const Center(child: Text("No tasks available"));
                       }
-                      // Filter tasks for the selected date
                       final tasksForSelectedDate = state.tasks.where((task) {
-                        return task.createdAt.day == _selectedDate.day &&
-                            task.createdAt.month == _selectedDate.month &&
-                            task.createdAt.year == _selectedDate.year;
+                        return task.targetDateTime.day == _selectedDate.day &&
+                            task.targetDateTime.month == _selectedDate.month &&
+                            task.targetDateTime.year == _selectedDate.year;
                       }).toList();
-                      // Sort tasks by time (createdAt)
-                      tasksForSelectedDate.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-                      // Group tasks into Ongoing and Completed
+                      tasksForSelectedDate.sort((a, b) {
+                        if (a.priority != b.priority) {
+                          return b.priority.compareTo(a.priority);
+                        }
+                        return a.targetDateTime.compareTo(b.targetDateTime);
+                      });
                       final ongoingTasks = tasksForSelectedDate.where((task) => !task.status).toList();
                       final completedTasks = tasksForSelectedDate.where((task) => task.status).toList();
 
@@ -160,7 +161,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
                       return ListView(
                         children: [
-                          // Ongoing Section
                           if (ongoingTasks.isNotEmpty) ...[
                             Row(
                               children: [
@@ -183,7 +183,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
                             ...ongoingTasks.map((task) => _buildTaskCard(context, task, Colors.pink)),
                             const SizedBox(height: 24),
                           ],
-                          // Completed Section
                           if (completedTasks.isNotEmpty) ...[
                             Row(
                               children: [
@@ -208,7 +207,21 @@ class _TaskListScreenState extends State<TaskListScreen> {
                         ],
                       );
                     } else if (state is TaskError) {
-                      return Center(child: Text(state.message));
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(state.message),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () {
+                                context.read<TaskBloc>().add(LoadTasks());
+                              },
+                              child: const Text('Retry'),
+                            ),
+                          ],
+                        ),
+                      );
                     } else {
                       return const Center(child: Text("No data"));
                     }
@@ -294,108 +307,102 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
   Widget _buildTaskCard(BuildContext context, Task task, Color groupColor) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: groupColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          // Checkbox for marking task as completed
-          task.status == true
-              ? Container()
-              : Checkbox(
-            value: task.status,
-            onChanged: (bool? value) {
-              if (value != null) {
-                final updatedTask = Task(
-                  id: task.id,
-                  title: task.title,
-                  description: task.description,
-                  status: value,
-                  createdAt: task.createdAt,
-                  priority: task.priority,
-                  targetDateTime: task.targetDateTime
-                );
-                context.read<TaskBloc>().add(UpdateTask(task.id, updatedTask));
-              }
-            },
-            activeColor: Theme.of(context).colorScheme.primary,
-            checkColor: Theme.of(context).colorScheme.onPrimary,
-          ),
-          const SizedBox(width: 8),
-          // Time
-          Column(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: groupColor.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+          Checkbox(
+          value: task.status,
+          onChanged: (bool? value) {
+            if (value != null) {
+              final updatedTask = Task(
+                id: task.id,
+                title: task.title,
+                description: task.description,
+                status: value,
+                createdAt: task.createdAt,
+                priority: task.priority,
+                targetDateTime: task.targetDateTime,
+              );
+              context.read<TaskBloc>().add(UpdateTask(task.id, updatedTask));
+            }
+          },
+          activeColor: Theme.of(context).colorScheme.primary,
+          checkColor: Theme.of(context).colorScheme.onPrimary,
+        ),
+        const SizedBox(width: 8),
+        Column(
             children: [
-              Text(
-                _formatTime(task.createdAt),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                _formatPeriod(task.createdAt),
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ],
-          ),
-          const SizedBox(width: 16),
-          // Task Details
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  task.title,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    decoration: task.status ? TextDecoration.lineThrough : null,
-                    color: task.status
-                        ? Theme.of(context).colorScheme.onSurface.withOpacity(0.6)
-                        : Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 12,
-                          backgroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
-                        ),
-                        Positioned(
-                          left: 16,
-                          child: CircleAvatar(
-                            radius: 12,
-                            backgroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Me and Anita',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          // Delete Button
-          IconButton(
-            icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.onSurface),
-            onPressed: () {
-              context.read<TaskBloc>().add(DeleteTask(task.id));
-            },
-          ),
-        ],
-      ),
+            Text(
+            _formatTime(task.targetDateTime),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        color: Theme.of(context).colorScheme.primary,
+    fontWeight: FontWeight.bold,
+    ),
+    ),
+    Text(
+    _formatPeriod(task.targetDateTime),
+    style: Theme.of(context).textTheme.bodyMedium,
+    ),
+    ],
+    ),
+    const SizedBox(width: 16),
+    Expanded(
+    child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+    Text(
+    task.title,
+    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+    fontWeight: FontWeight.bold,
+    decoration: task.status ? TextDecoration.lineThrough : null,
+    color: task.status
+    ? Theme.of(context).colorScheme.onSurface.withOpacity(0.6)
+        : Theme.of(context).colorScheme.onSurface,
+    ),
+    ),
+    const SizedBox(height: 4),
+    Row(
+    children: [
+    Stack(
+    children: [
+    CircleAvatar(
+    radius: 12,
+    backgroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+    ),
+    Positioned(
+    left: 16,
+    child: CircleAvatar(
+    radius: 12,
+    backgroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+    ),
+    ),
+    ],
+    ),
+    const SizedBox(width: 8),
+    Text(
+    'Unassigned',
+    style: Theme.of(context).textTheme.bodyMedium,
+    ),
+    ],
+    ),
+    ],
+    ),
+    ),
+    IconButton(
+    icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.onSurface),
+    onPressed: () {
+    context.read<TaskBloc>().add(DeleteTask(task.id));
+    },
+    ),
+    ],
+    ),
     );
-  }
+    }
 
   String _formatTime(DateTime dateTime) {
     final hour = dateTime.hour % 12 == 0 ? 12 : dateTime.hour % 12;

@@ -5,34 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../../backendProperties.dart';
 
-class _DebugWrapper extends StatefulWidget {
-  final Widget child;
-  const _DebugWrapper({required this.child});
-
-  @override
-  _DebugWrapperState createState() => _DebugWrapperState();
-}
-
-class _DebugWrapperState extends State<_DebugWrapper> {
-  @override
-  void initState() {
-    super.initState();
-    print("DebugWrapper initState");
-  }
-
-  @override
-  void didUpdateWidget(covariant _DebugWrapper oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    print("DebugWrapper didUpdateWidget");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    print("DebugWrapper build");
-    return widget.child;
-  }
-}
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -54,20 +26,18 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController!.addListener(() {
-      if (_errorMessage != null) {
-        setState(() {
-          _errorMessage = null; // Clear error when switching tabs
-        });
-      }
+      // setState(() {
+      //   _errorMessage = null; // Clear error when switching tabs
+      // });
     });
     _initializeDeviceId();
   }
 
   Future<void> _initializeDeviceId() async {
     final deviceId = await getDeviceId();
-    setState(() {
-      _deviceId = deviceId;
-    });
+    // setState(() {
+    //   _deviceId = deviceId;
+    // });
   }
 
   Future<String> getDeviceId() async {
@@ -88,16 +58,16 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   Future<void> _requestOtpWithPhone() async {
     if (_phoneController.text.length != 10 || !RegExp(r'^\d{10}$').hasMatch(_phoneController.text)) {
-      setState(() {
-        _errorMessage = "Please enter a valid 10-digit mobile number";
-      });
+      // setState(() {
+      //   _errorMessage = "Please enter a valid 10-digit mobile number";
+      // });
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+    // setState(() {
+    //   _isLoading = true;
+    //   _errorMessage = null;
+    // });
 
     try {
       final response = await http.post(
@@ -110,6 +80,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       );
 
       if (response.statusCode == 200) {
+        // Since API returns no body, assume success and navigate
         Navigator.pushNamed(
           context,
           '/otp_verification',
@@ -119,18 +90,18 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           },
         );
       } else {
-        setState(() {
-          _errorMessage = "Failed to send OTP. Please try again.";
-        });
+        // setState(() {
+        //   _errorMessage = "Failed to send OTP. Please try again.";
+        // });
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = "Error sending OTP: $e";
-      });
+      // setState(() {
+      //   _errorMessage = "Error sending OTP: $e";
+      // });
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      // setState(() {
+      //   _isLoading = false;
+      // });
     }
   }
 
@@ -142,9 +113,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       return;
     }
 
-    setState(() {
-      _errorMessage = null;
-    });
+    // setState(() {
+    //   _errorMessage = null;
+    // });
 
     Navigator.pushNamed(
       context,
@@ -164,52 +135,50 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     print("LoginPage build");
-    return _DebugWrapper(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const _HeaderSection(),
-                const SizedBox(height: 40),
-                TabBar(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const _HeaderSection(),
+              const SizedBox(height: 40),
+              TabBar(
+                controller: _tabController,
+                labelColor: Colors.red,
+                unselectedLabelColor: Colors.grey,
+                indicatorColor: Colors.red,
+                tabs: const [
+                  Tab(text: 'Phone'),
+                  Tab(text: 'Email'),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: TabBarView(
                   controller: _tabController,
-                  labelColor: Colors.red,
-                  unselectedLabelColor: Colors.grey,
-                  indicatorColor: Colors.red,
-                  tabs: const [
-                    Tab(text: 'Phone'),
-                    Tab(text: 'Email'),
+                  children: [
+                    _PhoneTab(
+                      controller: _phoneController,
+                      errorMessage: _tabController!.index == 0 ? _errorMessage : null,
+                    ),
+                    _EmailTab(
+                      controller: _emailController,
+                      errorMessage: _tabController!.index == 1 ? _errorMessage : null,
+                    ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      _PhoneTab(
-                        controller: _phoneController,
-                        errorMessage: _tabController!.index == 0 ? _errorMessage : null,
-                      ),
-                      _EmailTab(
-                        controller: _emailController,
-                        errorMessage: _tabController!.index == 1 ? _errorMessage : null,
-                      ),
-                    ],
-                  ),
-                ),
-                _ActionButton(
-                  isLoading: _isLoading,
-                  onPressed: _tabController!.index == 0 ? _requestOtpWithPhone : _redirectToRegister,
-                  label: _tabController!.index == 0 ? 'SEND CODE' : 'CONTINUE',
-                ),
-                const _FooterText(),
-                const SizedBox(height: 20),
-              ],
-            ),
+              ),
+              _ActionButton(
+                isLoading: _isLoading,
+                onPressed: _tabController!.index == 0 ? _requestOtpWithPhone : _redirectToRegister,
+                label: _tabController!.index == 0 ? 'SEND CODE' : 'CONTINUE',
+              ),
+              const _FooterText(),
+              const SizedBox(height: 20),
+            ],
           ),
         ),
       ),
@@ -223,15 +192,15 @@ class _HeaderSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print("HeaderSection build");
-    return const Column(
+    return Column(
       children: [
-        SizedBox(height: 40),
-        Image(
-          image: AssetImage('assets/splash_screen.png'),
+        const SizedBox(height: 40),
+        Image.asset(
+          'assets/logo.png',
           height: 80,
         ),
-        SizedBox(height: 20),
-        Text(
+        const SizedBox(height: 20),
+        const Text(
           'DealsDray',
           style: TextStyle(
             fontSize: 24,
@@ -239,8 +208,8 @@ class _HeaderSection extends StatelessWidget {
             color: Colors.black87,
           ),
         ),
-        SizedBox(height: 10),
-        Text(
+        const SizedBox(height: 10),
+        const Text(
           'Login with your phone or email',
           style: TextStyle(
             fontSize: 16,
@@ -274,19 +243,19 @@ class _PhoneTab extends StatelessWidget {
           TextField(
             controller: controller,
             keyboardType: TextInputType.phone,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: "Phone",
               hintText: "Enter your 10-digit mobile number",
-              prefixIcon: Icon(Icons.phone, color: Colors.grey),
+              prefixIcon: const Icon(Icons.phone, color: Colors.grey),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(12)),
-                borderSide: BorderSide(color: Colors.grey),
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Colors.grey),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(12)),
-                borderSide: BorderSide(color: Colors.red, width: 2),
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Colors.red, width: 2),
               ),
-              contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
             ),
           ),
           if (errorMessage != null) ...[
@@ -320,19 +289,19 @@ class _EmailTab extends StatelessWidget {
             TextField(
               controller: controller,
               keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: "Email",
                 hintText: "Enter your email address",
-                prefixIcon: Icon(Icons.email, color: Colors.grey),
+                prefixIcon: const Icon(Icons.email, color: Colors.grey),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                  borderSide: BorderSide(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                  borderSide: BorderSide(color: Colors.red, width: 2),
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.red, width: 2),
                 ),
-                contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               ),
             ),
             if (errorMessage != null) ...[
@@ -370,21 +339,21 @@ class _ActionButton extends StatelessWidget {
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
           elevation: 5,
           backgroundColor: Colors.transparent,
           shadowColor: Colors.red.withOpacity(0.3),
         ),
         child: Ink(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
               colors: [Colors.red, Colors.redAccent],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.all(Radius.circular(12)),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Container(
             alignment: Alignment.center,

@@ -19,13 +19,13 @@ class Task {
 
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
-      id: json['id'] as int,
-      title: json['title'] as String,
-      description: json['description'] as String?,
-      status: json['status'] as bool,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      priority: json['priority'] as int,
-      targetDateTime: DateTime.parse(json['target_date_time'] as String),
+      id: json['id'] is int ? json['id'] : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString(),
+      status: json['status'] is bool ? json['status'] : false,
+      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ?? DateTime.now(),
+      priority: json['priority'] is int ? json['priority'] : int.tryParse(json['priority']?.toString() ?? '0') ?? 0,
+      targetDateTime: DateTime.tryParse(json['target_date_time']?.toString() ?? '') ?? DateTime.now(),
     );
   }
 
