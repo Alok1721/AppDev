@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../pages/user/user_view_model.dart';
 import '../routes.dart';
-
 
 class CommonBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -17,17 +15,22 @@ class CommonBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.red.shade400, Colors.red.shade600],
+          colors: [
+            Theme.of(context).colorScheme.primary,
+            Theme.of(context).colorScheme.secondary,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(screenWidth * 0.05)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -37,10 +40,10 @@ class CommonBottomNavigationBar extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         currentIndex: currentIndex,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white70,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
+        selectedItemColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
+        unselectedItemColor: Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
+        selectedLabelStyle: Theme.of(context).bottomNavigationBarTheme.selectedLabelStyle,
+        unselectedLabelStyle: Theme.of(context).bottomNavigationBarTheme.unselectedLabelStyle,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
         items: const [
@@ -82,15 +85,16 @@ class ProfileBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userViewModel = Provider.of<UserViewModel>(context);
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(screenWidth * 0.05),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(screenWidth * 0.05)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -103,41 +107,45 @@ class ProfileBottomSheet extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Profile',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               IconButton(
-                icon: const Icon(Icons.close),
+                icon: Icon(
+                  Icons.close,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: screenWidth * 0.05),
           _buildProfileInfo(
             icon: Icons.person,
             label: 'Name',
             value: userViewModel.user?.name ?? 'N/A',
+            context: context,
           ),
           _buildProfileInfo(
             icon: Icons.email,
             label: 'Email',
             value: userViewModel.user?.email ?? 'N/A',
+            context: context,
           ),
           _buildProfileInfo(
             icon: Icons.phone,
             label: 'Phone',
             value: userViewModel.user?.phone ?? 'N/A',
+            context: context,
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: screenWidth * 0.05),
           Center(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.1,
+                  vertical: screenWidth * 0.04,
                 ),
               ),
               onPressed: () async {
@@ -148,13 +156,16 @@ class ProfileBottomSheet extends StatelessWidget {
                       (route) => false,
                 );
               },
-              child: const Text(
+              child: Text(
                 'Logout',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: screenWidth * 0.04,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: screenWidth * 0.05),
         ],
       ),
     );
@@ -164,23 +175,30 @@ class ProfileBottomSheet extends StatelessWidget {
     required IconData icon,
     required String label,
     required String value,
+    required BuildContext context,
   }) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: EdgeInsets.symmetric(vertical: screenWidth * 0.025),
       child: Row(
         children: [
-          Icon(icon, color: Colors.red, size: 24),
-          const SizedBox(width: 15),
+          Icon(
+            icon,
+            color: Theme.of(context).colorScheme.primary,
+            size: screenWidth * 0.06,
+          ),
+          SizedBox(width: screenWidth * 0.04),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 label,
-                style: const TextStyle(fontSize: 14, color: Colors.grey),
+                style: Theme.of(context).textTheme.labelMedium,
               ),
               Text(
                 value,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
               ),
             ],
           ),

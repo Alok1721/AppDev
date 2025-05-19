@@ -43,6 +43,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         }
 
         return Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor, // Use theme background
           body: Container(
             child: SafeArea(
               child: Column(
@@ -64,19 +65,22 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     child: Container(
                       width: 230,
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
+                        color: Theme.of(context).colorScheme.surface.withOpacity(0.5), // Use theme surface
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: TabBar(
                         controller: _tabController,
-                        labelColor: Colors.white,
-                        unselectedLabelColor: Colors.black,
+                        labelColor: Theme.of(context).colorScheme.onPrimary,
+                        unselectedLabelColor: Theme.of(context).colorScheme.onSurface,
                         labelStyle: const TextStyle(fontWeight: FontWeight.bold),
                         unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
                         indicatorSize: TabBarIndicatorSize.label,
                         indicator: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Colors.red.shade400, Colors.red.shade600],
+                            colors: [
+                              Theme.of(context).colorScheme.primary,
+                              Theme.of(context).colorScheme.secondary,
+                            ],
                           ),
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -103,7 +107,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     child: Container(
                       margin: const EdgeInsets.symmetric(horizontal: 16.0),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface, // Use theme surface
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: TabBarView(
@@ -117,10 +121,10 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   ),
                   // Loading and Error States
                   if (viewModel.isLoading)
-                    const Padding(
-                      padding: EdgeInsets.all(16.0),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                        valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
                       ),
                     ),
                   if (viewModel.errorMessage != null)
@@ -128,13 +132,16 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
                       padding: const EdgeInsets.all(10.0),
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
+                        color: Theme.of(context).colorScheme.error.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.red),
+                        border: Border.all(color: Theme.of(context).colorScheme.error),
                       ),
                       child: Text(
                         viewModel.errorMessage!,
-                        style: const TextStyle(color: Colors.red, fontSize: 14),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                          fontSize: 14,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -154,23 +161,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
+          Text(
             'Glad to see you!',
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+            style: Theme.of(context).textTheme.titleLarge, // Use theme text style
             textAlign: TextAlign.left,
           ),
           const SizedBox(height: 10),
-          const Text(
+          Text(
             'Please provide your phone number',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Colors.grey,
-            ),
+            style: Theme.of(context).textTheme.labelMedium, // Use theme text style
             textAlign: TextAlign.left,
           ),
           const SizedBox(height: 20),
@@ -180,18 +179,19 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             decoration: InputDecoration(
               labelText: 'Mobile Number',
               hintText: 'Enter 10-digit mobile number',
-              prefixIcon: const Icon(Icons.phone, color: Colors.red),
+              prefixIcon: Icon(Icons.phone, color: Theme.of(context).colorScheme.primary),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none,
               ),
               filled: true,
-              fillColor: Colors.grey.shade100,
+              fillColor: Theme.of(context).colorScheme.surface.withOpacity(0.5),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Colors.red, width: 2),
+                borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
               ),
             ),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             onChanged: (value) {
               if (value.length != 10 || !RegExp(r'^\d{10}$').hasMatch(value)) {
                 viewModel.setErrorMessage("Please enter a valid 10-digit mobile number");
@@ -230,12 +230,12 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 }
               }
             },
-            child: const Text(
+            child: Text(
               'Request OTP',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
           ),
@@ -250,23 +250,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
+          Text(
             "Let's Begin!",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+            style: Theme.of(context).textTheme.titleLarge,
             textAlign: TextAlign.left,
           ),
           const SizedBox(height: 10),
           Text(
             "Please enter your credentials to proceed",
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Colors.grey,
-            ),
+            style: Theme.of(context).textTheme.labelMedium,
             textAlign: TextAlign.left,
           ),
           const SizedBox(height: 20),
@@ -276,18 +268,19 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             decoration: InputDecoration(
               labelText: 'Email',
               hintText: 'Enter your email address',
-              prefixIcon: const Icon(Icons.email, color: Colors.red),
+              prefixIcon: Icon(Icons.email, color: Theme.of(context).colorScheme.primary),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none,
               ),
               filled: true,
-              fillColor: Colors.grey.shade100,
+              fillColor: Theme.of(context).colorScheme.surface.withOpacity(0.5),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Colors.red, width: 2),
+                borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
               ),
             ),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             onChanged: (value) {
               if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
                 viewModel.setErrorMessage("Please enter a valid email address");
@@ -303,18 +296,19 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             decoration: InputDecoration(
               labelText: 'Password',
               hintText: 'Enter your password',
-              prefixIcon: const Icon(Icons.lock, color: Colors.red),
+              prefixIcon: Icon(Icons.lock, color: Theme.of(context).colorScheme.primary),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none,
               ),
               filled: true,
-              fillColor: Colors.grey.shade100,
+              fillColor: Theme.of(context).colorScheme.surface.withOpacity(0.5),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Colors.red, width: 2),
+                borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
               ),
             ),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             onChanged: (value) {
               if (value.length < 6) {
                 viewModel.setErrorMessage("Password must be at least 6 characters");
@@ -329,18 +323,19 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             decoration: InputDecoration(
               labelText: 'Referral Code (optional)',
               hintText: 'Enter referral code',
-              prefixIcon: const Icon(Icons.code, color: Colors.red),
+              prefixIcon: Icon(Icons.code, color: Theme.of(context).colorScheme.primary),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none,
               ),
               filled: true,
-              fillColor: Colors.grey.shade100,
+              fillColor: Theme.of(context).colorScheme.surface.withOpacity(0.5),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Colors.red, width: 2),
+                borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
               ),
             ),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
           ),
           const SizedBox(height: 20),
           _buildGradientButton(
@@ -357,12 +352,12 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 }
               }
             },
-            child: const Text(
+            child: Text(
               'Login / Register',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
           ),
@@ -379,8 +374,14 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: onPressed != null
-                ? [Colors.red.shade400, Colors.red.shade600]
-                : [Colors.grey.shade400, Colors.grey.shade600],
+                ? [
+              Theme.of(context).colorScheme.primary,
+              Theme.of(context).colorScheme.secondary,
+            ]
+                : [
+              Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),

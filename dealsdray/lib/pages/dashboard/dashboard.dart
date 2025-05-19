@@ -7,7 +7,6 @@ import 'dashboard_view_model.dart';
 import 'sidebar.dart';
 import 'cart_page.dart';
 
-
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
 
@@ -20,6 +19,9 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Consumer<DashboardViewModel>(
       builder: (context, viewModel, child) {
         if (!viewModel.isLoading && viewModel.dashboardData == null && viewModel.errorMessage == null) {
@@ -29,38 +31,54 @@ class _DashboardPageState extends State<DashboardPage> {
         return Scaffold(
           key: _scaffoldKey,
           drawer: const Sidebar(),
-          backgroundColor: Colors.grey[50],
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
             leading: IconButton(
-              icon: const Icon(Icons.menu, color: Colors.black),
+              icon: Icon(
+                Icons.menu,
+                color: Theme.of(context).appBarTheme.iconTheme?.color,
+                size: screenWidth * 0.06,
+              ),
               onPressed: () => _scaffoldKey.currentState?.openDrawer(),
             ),
             title: Container(
+              width: screenWidth * 0.7,
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: Theme.of(context).colorScheme.surface.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(25),
               ),
-              child: const TextField(
+              child: TextField(
                 decoration: InputDecoration(
                   hintText: 'Search here',
+                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
                   border: InputBorder.none,
-                  prefixIcon: Icon(Icons.search, color: Colors.grey),
-                  contentPadding: EdgeInsets.symmetric(vertical: 12),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                    size: screenWidth * 0.05,
+                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
                 ),
               ),
             ),
             actions: [
               IconButton(
                 icon: Badge(
-                  smallSize: 8,
-                  child: const Icon(Icons.notifications_outlined),
+                  smallSize: screenWidth * 0.02,
+                  child: Icon(
+                    Icons.notifications_outlined,
+                    size: screenWidth * 0.06,
+                  ),
                 ),
                 onPressed: () {},
               ),
               Stack(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.shopping_cart, color: Colors.black),
+                    icon: Icon(
+                      Icons.shopping_cart,
+                      size: screenWidth * 0.06,
+                    ),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -70,23 +88,23 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                   if (viewModel.cartItems.isNotEmpty)
                     Positioned(
-                      right: 5,
-                      top: 5,
+                      right: screenWidth * 0.01,
+                      top: screenWidth * 0.01,
                       child: Container(
-                        padding: const EdgeInsets.all(2),
+                        padding: EdgeInsets.all(screenWidth * 0.005),
                         decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(10),
+                          color: Theme.of(context).colorScheme.primary,
+                          borderRadius: BorderRadius.circular(screenWidth * 0.025),
                         ),
-                        constraints: const BoxConstraints(
-                          minWidth: 16,
-                          minHeight: 16,
+                        constraints: BoxConstraints(
+                          minWidth: screenWidth * 0.04,
+                          minHeight: screenWidth * 0.04,
                         ),
                         child: Text(
                           '${viewModel.cartItems.length}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            fontSize: screenWidth * 0.025,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -94,11 +112,8 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                 ],
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: screenWidth * 0.025),
             ],
-            backgroundColor: Colors.white,
-            elevation: 0.5,
-            shadowColor: Colors.black.withOpacity(0.1),
           ),
           body: viewModel.isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -109,37 +124,50 @@ class _DashboardPageState extends State<DashboardPage> {
               children: [
                 Text(
                   viewModel.errorMessage!,
-                  style: const TextStyle(color: Colors.red),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontSize: screenWidth * 0.04,
+                  ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: screenHeight * 0.015),
                 ElevatedButton(
                   onPressed: viewModel.fetchDashboardData,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.05,
+                      vertical: screenHeight * 0.015,
+                    ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(screenWidth * 0.05),
                     ),
                   ),
-                  child: const Text('Retry'),
+                  child: Text(
+                    'Retry',
+                    style: TextStyle(fontSize: screenWidth * 0.035),
+                  ),
                 ),
               ],
             ),
           )
               : RefreshIndicator(
             onRefresh: viewModel.fetchDashboardData,
-            color: Colors.red,
+            color: Theme.of(context).colorScheme.primary,
             child: SingleChildScrollView(
               child: DashboardContent(viewModel: viewModel),
             ),
           ),
           floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.red,
             elevation: 4,
+            backgroundColor: Theme.of(context).colorScheme.primary,
             onPressed: () {
               // TODO: Implement chat functionality
             },
-            child: const Icon(Icons.chat, color: Colors.white),
+            child: Icon(
+              Icons.chat,
+              size: screenWidth * 0.06,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
           ),
           bottomNavigationBar: CommonBottomNavigationBar(
             currentIndex: 0,

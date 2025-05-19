@@ -3,6 +3,7 @@ import 'package:dealsdray/pages/auth/otp/otp_view_model.dart';
 import 'package:dealsdray/pages/dashboard/dashboard_repo.dart';
 import 'package:dealsdray/pages/dashboard/dashboard_view_model.dart';
 import 'package:dealsdray/pages/user/user_view_model.dart';
+import 'package:dealsdray/utils/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dealsdray/pages/splash/splash.dart';
@@ -25,6 +26,7 @@ void main() {
         ChangeNotifierProvider(
           create: (_) => DashboardViewModel(dashboardRepo: DashboardRepo()),
         ),
+        ChangeNotifierProvider(create: (context) => ThemeProvider())
       ],
       child: DealDray(),
     ),
@@ -36,7 +38,7 @@ class DealDray extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'DealsDray',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: Provider.of<ThemeProvider>(context).themeData,
       routes: AppRoutes.routes,
       initialRoute: AppRoutes.splash,
       onGenerateRoute: AppRoutes.onGenerateRoute,

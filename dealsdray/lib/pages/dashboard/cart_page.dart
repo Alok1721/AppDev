@@ -12,19 +12,26 @@ class CartPage extends StatelessWidget {
       builder: (context, viewModel, child) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('My Cart'),
-            backgroundColor: Colors.white,
-            elevation: 0,
+            title: Text(
+              'My Cart',
+              style: Theme.of(context).appBarTheme.titleTextStyle,
+            ),
+            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+            elevation: Theme.of(context).appBarTheme.elevation,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              icon: Icon(
+                Icons.arrow_back,
+                color: Theme.of(context).appBarTheme.iconTheme?.color,
+              ),
               onPressed: () => Navigator.pop(context),
             ),
           ),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: viewModel.cartItems.isEmpty
-              ? const Center(
+              ? Center(
             child: Text(
               'Your cart is empty',
-              style: TextStyle(fontSize: 18, color: Colors.grey),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 18),
             ),
           )
               : Column(
@@ -52,6 +59,8 @@ class CartPage extends StatelessWidget {
                     return Card(
                       margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      color: Theme.of(context).cardTheme.color,
+                      elevation: Theme.of(context).cardTheme.elevation,
                       child: Padding(
                         padding: const EdgeInsets.all(10),
                         child: Row(
@@ -74,27 +83,43 @@ class CartPage extends StatelessWidget {
                                 children: [
                                   Text(
                                     label,
-                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context).colorScheme.onSurface,
+                                    ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   const SizedBox(height: 5),
                                   Text(
                                     '₹${price.toStringAsFixed(2)}',
-                                    style: const TextStyle(color: Colors.green, fontSize: 16),
+                                    style: TextStyle(
+                                      color: Theme.of(context).colorScheme.primary,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                   const SizedBox(height: 5),
                                   Row(
                                     children: [
                                       IconButton(
-                                        icon: const Icon(Icons.remove_circle, color: Colors.red),
+                                        icon: Icon(
+                                          Icons.remove_circle,
+                                          color: Theme.of(context).colorScheme.error,
+                                        ),
                                         onPressed: () {
                                           viewModel.updateQuantity(item, cartItem.quantity - 1);
                                         },
                                       ),
-                                      Text('${cartItem.quantity}'),
+                                      Text(
+                                        '${cartItem.quantity}',
+                                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                                      ),
                                       IconButton(
-                                        icon: const Icon(Icons.add_circle, color: Colors.green),
+                                        icon: Icon(
+                                          Icons.add_circle,
+                                          color: Theme.of(context).colorScheme.primary,
+                                        ),
                                         onPressed: () {
                                           viewModel.updateQuantity(item, cartItem.quantity + 1);
                                         },
@@ -105,7 +130,10 @@ class CartPage extends StatelessWidget {
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
+                              icon: Icon(
+                                Icons.delete,
+                                color: Theme.of(context).colorScheme.error,
+                              ),
                               onPressed: () {
                                 viewModel.removeFromCart(item);
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -123,10 +151,10 @@ class CartPage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
                       spreadRadius: 1,
                       blurRadius: 5,
                       offset: const Offset(0, -2),
@@ -138,31 +166,64 @@ class CartPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Subtotal', style: TextStyle(fontSize: 16)),
-                        Text('₹${viewModel.subtotal.toStringAsFixed(2)}',
-                            style: const TextStyle(fontSize: 16)),
+                        Text(
+                          'Subtotal',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        Text(
+                          '₹${viewModel.subtotal.toStringAsFixed(2)}',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 5),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Tax (10%)', style: TextStyle(fontSize: 16)),
-                        Text('₹${viewModel.tax.toStringAsFixed(2)}',
-                            style: const TextStyle(fontSize: 16)),
+                        Text(
+                          'Tax (10%)',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        Text(
+                          '₹${viewModel.tax.toStringAsFixed(2)}',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
                       ],
                     ),
-                    const Divider(height: 20),
+                    Divider(
+                      height: 20,
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Total',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
                         Text(
                           '₹${viewModel.total.toStringAsFixed(2)}',
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
                       ],
                     ),
@@ -175,14 +236,7 @@ class CartPage extends StatelessWidget {
                             const SnackBar(content: Text('Proceeding to checkout...')),
                           );
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
+                        style: Theme.of(context).elevatedButtonTheme.style,
                         child: const Text(
                           'Proceed to Checkout',
                           style: TextStyle(fontSize: 16),

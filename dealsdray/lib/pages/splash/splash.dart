@@ -42,9 +42,8 @@ class _SplashPageState extends State<SplashPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/splash_screen.png',
-                  width: 200,
-                  height: 200,
+                  'assets/splash_screen2.png',
+                  fit: BoxFit.fill,
                 ),
                 const SizedBox(height: 20),
                 if (viewModel.isLoading)

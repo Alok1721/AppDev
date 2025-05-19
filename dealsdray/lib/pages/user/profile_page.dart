@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 
 import '../../routes.dart';
 
-
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
@@ -14,14 +13,21 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
-        backgroundColor: Colors.white,
-        elevation: 0,
+        title: Text(
+          'Profile',
+          style: Theme.of(context).appBarTheme.titleTextStyle,
+        ),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        elevation: Theme.of(context).appBarTheme.elevation,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).appBarTheme.iconTheme?.color,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -29,16 +35,19 @@ class ProfilePage extends StatelessWidget {
           children: [
             const SizedBox(height: 20),
             _buildProfileInfo(
+              context: context, // Pass the context
               icon: Icons.person,
               label: 'Name',
               value: userViewModel.user?.name ?? 'N/A',
             ),
             _buildProfileInfo(
+              context: context, // Pass the context
               icon: Icons.email,
               label: 'Email',
               value: userViewModel.user?.email ?? 'N/A',
             ),
             _buildProfileInfo(
+              context: context, // Pass the context
               icon: Icons.phone,
               label: 'Phone',
               value: userViewModel.user?.phone ?? 'N/A',
@@ -46,14 +55,7 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 40),
             Center(
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
+                style: Theme.of(context).elevatedButtonTheme.style,
                 onPressed: () async {
                   await userViewModel.logout();
                   Navigator.pushNamedAndRemoveUntil(
@@ -75,6 +77,7 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildProfileInfo({
+    required BuildContext context, // Add context parameter
     required IconData icon,
     required String label,
     required String value,
@@ -83,18 +86,22 @@ class ProfilePage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
-          Icon(icon, color: Colors.red, size: 24),
+          Icon(icon, color: Theme.of(context).colorScheme.primary, size: 24),
           const SizedBox(width: 15),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 label,
-                style: const TextStyle(fontSize: 14, color: Colors.grey),
+                style: Theme.of(context).textTheme.labelMedium,
               ),
               Text(
                 value,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
             ],
           ),

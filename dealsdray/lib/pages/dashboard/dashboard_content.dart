@@ -11,73 +11,75 @@ class DashboardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BannerSection(banners: viewModel.dashboardData!.bannerOne, height: 200),
-        const SizedBox(height: 20),
-        SectionTitle(title: 'Categories'),
+        BannerSection(banners: viewModel.dashboardData!.bannerOne, height: screenHeight * 0.2),
+        SizedBox(height: screenHeight * 0.02),
+        const SectionTitle(title: 'Categories'),
         CategorySection(categories: viewModel.dashboardData!.categories),
-        const SizedBox(height: 20),
-        SectionTitle(title: 'Featured Products'),
+        SizedBox(height: screenHeight * 0.02),
+        const SectionTitle(title: 'Featured Products'),
         ProductListSection(
           items: viewModel.dashboardData!.products,
-          onAddToCart: (item) => _addToCart(context, item, 10000), // Example price
+          onAddToCart: (item) => _addToCart(context, item, 10000),
         ),
-        const SizedBox(height: 20),
-        BannerSection(banners: viewModel.dashboardData!.bannerTwo, height: 100),
-        const SizedBox(height: 20),
-        SectionTitle(title: 'New Arrivals'),
+        SizedBox(height: screenHeight * 0.02),
+        BannerSection(banners: viewModel.dashboardData!.bannerTwo, height: screenHeight * 0.15),
+        SizedBox(height: screenHeight * 0.02),
+        const SectionTitle(title: 'New Arrivals'),
         ProductListSection(
           items: viewModel.dashboardData!.newArrivals,
           onAddToCart: (item) => _addToCart(context, item, 12000),
         ),
-        const SizedBox(height: 20),
-        BannerSection(banners: viewModel.dashboardData!.bannerThree, height: 150),
-        const SizedBox(height: 20),
-        SectionTitle(title: 'Explore Categories'),
+        SizedBox(height: screenHeight * 0.02),
+        BannerSection(banners: viewModel.dashboardData!.bannerThree, height: screenHeight * 0.2),
+        SizedBox(height: screenHeight * 0.02),
+        const SectionTitle(title: 'Explore Categories'),
         ProductListSection(
           items: viewModel.dashboardData!.categoriesListing,
           onAddToCart: (item) => _addToCart(context, item, 8000),
         ),
-        const SizedBox(height: 20),
-        SectionTitle(title: 'Top Brands'),
-        BannerSection(banners: viewModel.dashboardData!.topBrands, height: 100),
-        const SizedBox(height: 20),
-        SectionTitle(title: 'Brand Deals'),
+        SizedBox(height: screenHeight * 0.02),
+        const SectionTitle(title: 'Top Brands'),
+        BannerSection(banners: viewModel.dashboardData!.topBrands, height: screenHeight * 0.15),
+        SizedBox(height: screenHeight * 0.02),
+        const SectionTitle(title: 'Brand Deals'),
         ProductListSection(
           items: viewModel.dashboardData!.brandListing,
           onAddToCart: (item) => _addToCart(context, item, 15000),
         ),
-        const SizedBox(height: 20),
-        SectionTitle(title: 'Top Selling Products'),
+        SizedBox(height: screenHeight * 0.02),
+        const SectionTitle(title: 'Top Selling Products'),
         ProductListSection(
           items: viewModel.dashboardData!.topSellingProducts,
           showOffer: false,
           onAddToCart: (item) => _addToCart(context, item, 9000),
         ),
-        const SizedBox(height: 20),
-        SectionTitle(title: 'Featured Laptops'),
+        SizedBox(height: screenHeight * 0.02),
+        const SectionTitle(title: 'Featured Laptops'),
         FeaturedLaptopSection(
           laptops: viewModel.dashboardData!.featuredLaptops,
           onAddToCart: (item) => _addToCart(context, item, double.parse(item.price)),
         ),
-        const SizedBox(height: 20),
-        SectionTitle(title: 'Upcoming Laptops'),
-        BannerSection(banners: viewModel.dashboardData!.upcomingLaptops, height: 100),
-        const SizedBox(height: 20),
-        SectionTitle(title: 'Unboxed Deals'),
+        SizedBox(height: screenHeight * 0.02),
+        const SectionTitle(title: 'Upcoming Laptops'),
+        BannerSection(banners: viewModel.dashboardData!.upcomingLaptops, height: screenHeight * 0.15),
+        SizedBox(height: screenHeight * 0.02),
+        const SectionTitle(title: 'Unboxed Deals'),
         ProductListSection(
           items: viewModel.dashboardData!.unboxedDeals,
           onAddToCart: (item) => _addToCart(context, item, 5000),
         ),
-        const SizedBox(height: 20),
-        SectionTitle(title: 'Browsing History'),
+        SizedBox(height: screenHeight * 0.02),
+        const SectionTitle(title: 'Browsing History'),
         ProductListSection(
           items: viewModel.dashboardData!.myBrowsingHistory,
           onAddToCart: (item) => _addToCart(context, item, 11000),
         ),
-        const SizedBox(height: 80),
+        SizedBox(height: screenHeight * 0.1),
       ],
     );
   }
@@ -85,7 +87,13 @@ class DashboardContent extends StatelessWidget {
   void _addToCart(BuildContext context, dynamic item, double price) {
     Provider.of<DashboardViewModel>(context, listen: false).addToCart(item, price: price);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${item.label} added to cart')),
+      SnackBar(
+        content: Text(
+          '${item.label} added to cart',
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+      ),
     );
   }
 }
@@ -97,24 +105,25 @@ class SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04, vertical: screenWidth * 0.012),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           TextButton(
             onPressed: () {},
-            child: const Text(
+            child: Text(
               'See All',
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontSize: screenWidth * 0.035,
+              ),
             ),
           ),
         ],
@@ -131,9 +140,11 @@ class BannerSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     if (banners.isEmpty) return const SizedBox.shrink();
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5),
+      margin: EdgeInsets.symmetric(vertical: screenWidth * 0.012),
       child: CarouselSlider(
         options: CarouselOptions(
           height: height,
@@ -145,12 +156,12 @@ class BannerSection extends StatelessWidget {
         ),
         items: banners.map((banner) {
           return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 5),
+            margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.012),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(screenWidth * 0.04),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
                   blurRadius: 6,
                   offset: const Offset(0, 3),
                 ),
@@ -176,42 +187,47 @@ class CategorySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     if (categories.isEmpty) return const SizedBox.shrink();
     return Container(
-      height: 100,
-      margin: const EdgeInsets.symmetric(vertical: 5),
+      height: screenWidth * 0.25,
+      margin: EdgeInsets.symmetric(vertical: screenWidth * 0.012),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
         itemCount: categories.length,
         itemBuilder: (context, index) {
           final category = categories[index];
           return GestureDetector(
             onTap: () {},
             child: Container(
-              width: 80,
-              margin: const EdgeInsets.symmetric(horizontal: 5),
+              width: screenWidth * 0.2,
+              margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.012),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(screenWidth * 0.025),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircleAvatar(
-                    radius: 25,
-                    backgroundColor: Colors.grey[100],
+                    radius: screenWidth * 0.06,
+                    backgroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
                     backgroundImage: NetworkImage(
                         category.icon.isNotEmpty ? category.icon : 'https://via.placeholder.com/50'),
                     onBackgroundImageError: (exception, stackTrace) =>
                     const AssetImage('assets/placeholder.png'),
                   ),
-                  const SizedBox(height: 5),
+                  SizedBox(height: screenWidth * 0.012),
                   Text(
                     category.label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 12),
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.03,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                 ],
               ),
@@ -237,33 +253,33 @@ class ProductListSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     if (items.isEmpty) return const SizedBox.shrink();
     return SizedBox(
-      height: 260,
+      height: screenWidth * 0.65,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
         itemCount: items.length,
         itemBuilder: (context, index) {
           final item = items[index];
           return GestureDetector(
             onTap: () {},
             child: Container(
-              width: 160,
-              margin: const EdgeInsets.symmetric(horizontal: 5),
+              width: screenWidth * 0.4,
+              margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.012),
               child: Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Stack(
                       children: [
                         ClipRRect(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(screenWidth * 0.03)),
                           child: Image.network(
                             item.icon.isNotEmpty ? item.icon : 'https://via.placeholder.com/150',
-                            height: 120,
+                            height: screenWidth * 0.25,
                             width: double.infinity,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) =>
@@ -272,71 +288,85 @@ class ProductListSection extends StatelessWidget {
                         ),
                         if (showOffer && item.offer != null)
                           Positioned(
-                            top: 8,
-                            left: 8,
+                            top: screenWidth * 0.02,
+                            left: screenWidth * 0.02,
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: screenWidth * 0.015,
+                                vertical: screenWidth * 0.005,
+                              ),
                               decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(10)),
+                                color: Theme.of(context).colorScheme.primary,
+                                borderRadius: BorderRadius.circular(screenWidth * 0.025),
+                              ),
                               child: Text(
                                 '${item.offer}% OFF',
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  fontSize: screenWidth * 0.025,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
                       ],
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(8),
+                      padding: EdgeInsets.all(screenWidth * 0.02),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (item.brandIcon != null && item.brandIcon!.isNotEmpty)
                             Image.network(
                               item.brandIcon!,
-                              height: 20,
-                              width: 20,
+                              height: screenWidth * 0.05,
+                              width: screenWidth * 0.05,
                               errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
                             ),
-                          const SizedBox(height: 5),
+                          SizedBox(height: screenWidth * 0.012),
                           Text(
                             item.label,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenWidth * 0.035,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           if (item.subLabel != null && item.subLabel!.isNotEmpty)
                             Text(
                               item.subLabel!,
-                              style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                fontSize: screenWidth * 0.03,
+                              ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                          const SizedBox(height: 5),
+                          SizedBox(height: screenWidth * 0.012),
                           Text(
                             '₹N/A',
-                            style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenWidth * 0.035,
+                            ),
                           ),
-                          const SizedBox(height: 5),
+                          SizedBox(height: screenWidth * 0.012),
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () => onAddToCart(item),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                padding: EdgeInsets.symmetric(vertical: screenWidth * 0.02),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(screenWidth * 0.02),
                                 ),
                               ),
-                              child: const Text(
+                              child: Text(
                                 'Add to Cart',
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: screenWidth * 0.03),
                               ),
                             ),
                           ),
@@ -366,24 +396,24 @@ class FeaturedLaptopSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     if (laptops.isEmpty) return const SizedBox.shrink();
     return Column(
       children: laptops.map((laptop) {
         return GestureDetector(
           onTap: () {},
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+            margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.04, vertical: screenWidth * 0.012),
             child: Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: Row(
                 children: [
                   ClipRRect(
-                    borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
+                    borderRadius: BorderRadius.horizontal(left: Radius.circular(screenWidth * 0.03)),
                     child: Image.network(
                       laptop.icon.isNotEmpty ? laptop.icon : 'https://via.placeholder.com/100',
-                      width: 100,
-                      height: 100,
+                      width: screenWidth * 0.25,
+                      height: screenWidth * 0.25,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) =>
                           Image.asset('assets/placeholder.png'),
@@ -391,7 +421,7 @@ class FeaturedLaptopSection extends StatelessWidget {
                   ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(10),
+                      padding: EdgeInsets.all(screenWidth * 0.025),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -399,48 +429,61 @@ class FeaturedLaptopSection extends StatelessWidget {
                             laptop.brandIcon.isNotEmpty
                                 ? laptop.brandIcon
                                 : 'https://via.placeholder.com/20',
-                            height: 20,
-                            width: 20,
+                            height: screenWidth * 0.05,
+                            width: screenWidth * 0.05,
                             errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
                           ),
-                          const SizedBox(height: 5),
+                          SizedBox(height: screenWidth * 0.012),
                           Text(
                             laptop.label,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenWidth * 0.035,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 5),
+                          SizedBox(height: screenWidth * 0.012),
                           Text(
                             '₹${laptop.price}',
-                            style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenWidth * 0.035,
+                            ),
                           ),
-                          const SizedBox(height: 5),
+                          SizedBox(height: screenWidth * 0.012),
                           Row(
-                            children: const [
-                              Icon(Icons.star, color: Colors.amber, size: 16),
+                            children: [
+                              Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: screenWidth * 0.04,
+                              ),
                               Text(
                                 ' 4.5',
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.03,
+                                  color: Theme.of(context).colorScheme.onSurface,
+                                ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 5),
+                          SizedBox(height: screenWidth * 0.012),
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () => onAddToCart(laptop),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                padding: EdgeInsets.symmetric(vertical: screenWidth * 0.02),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(screenWidth * 0.02),
                                 ),
                               ),
-                              child: const Text(
+                              child: Text(
                                 'Add to Cart',
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: screenWidth * 0.03),
                               ),
                             ),
                           ),
